@@ -1,0 +1,181 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+\title{Mini Project 1}
+\author{Daniel Cohen}
+\date{October 2015}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+\section{Theory Question 1}
+Cosine similarity is not an inner product space since norm space is not
+equivalent to inner product space. Consider the axiom of linearity wrt the first
+argument:
+$$\langle {a+x,y} \rangle = \langle {a,y} \rangle + \langle {x,y} \rangle $$
+However, this does not hold true in norm space, and since cosine similarity
+utilizes the norms of the two vectors, it is not linear. Consider vectors $i~=
+[1,4,7],~j = [1,3,4], k = [1,4,-8]$. Then examining the axiom of linearity:
+\begin{align*}
+  \delta (i+j,k) &= \delta(i,k) + \delta (j,k)\\
+  0.97786 &\neq 1.95191
+\end{align*}
+Thus cosine similarity is not an inner product space.
+
+\section{Theory Question}
+
+Examining the analogy ``London is to England as Baghdad is to X'' across
+the various dimensions with COSADD and COSMULT results in both COSADD and
+COSMULT returning \textit{Iraq} correctly in all but the 50D case, where it is
+the 3rd best option for COSADD. For \textit{X as Mosul}, neither distance metric
+returned the correct answer but COSADD did perform best, returning \textit{Mosul}
+as the 3rd best option in the 300D case.
+
+Examining other anologies, ``Pharmacy is to Medicine as Restaurant is to X'',
+both metrics give \textit{food} as the best
+choice, COSADD returns \textit{restaurants} as it's next best option compared to
+COSMULT's \textit{eat}, which follows more in line with the anology.
+
+Several other analogies were considered, and the data suggests that COSADD
+and COSMULT perform comparably in most situations at the 300D level. In keeping
+with the observed evaluations, COSMULT performs better for syntactic situations,
+sometimes beating COSADD even in lower dimensions.
+
+An interesting note is that while COSADD and COSMULT are about even, in cases
+when the answer is ambiguous, COSMULT will evaluate possible answers closer
+together than COSADD. This follows with the math, as COSMULT reduces large
+distances, and magnifies small distances. Thus, COSMULT
+reflects this by returning closely spaced scores.However, in the GloVe paper,
+they create a cost function that does just this, by enforcing $f(x)$ to be
+monotonicly increasing, and $f(x)$ be small for large values. Thus COSMULT, when
+utilized with GloVe vectors, does not offer the significant benefits which Levy
+and Goldberg suggest.
+
+In terms of what best represents the word analogy distance metric, specifically
+semantic similarity as this question asks, COSADD generally performs the best in
+all dimensions in the case of GloVe vectors.
+
+
+\section{Programming Question} in the case of GloVe vectors.
+
+The performance metrics for COSADD and COSMULL on the google dataset are
+described in Table~\ref{google} for the 300,200,100, and 50 dimension embeddings.
+
+\begin{table}[ht]
+  \centering
+  \caption{Distance Metric on Google Dataset}
+  \label{google}
+\begin{tabular}{|l||c|c|c|}
+  \hline
+  Method & Sem & Syn & Total \\
+  \hline
+  \bf{300} & & & \\
+  \hline
+  COSADD & 79.0 & 67.2 & 72.5\\
+  \bf{gl}COSADD & 77.4  & 67.0 & 71.7  \\
+  COSMUL & 78.7 & 68.7 & 73.2 \\
+  \hline
+  \bf{200}& & &\\
+  \hline
+  COSADD & 79.0 & 67.2 & 70.5\\
+  COSMUL & 74.1 & 65.6 & 69.4\\
+  \hline
+  \bf{100}& & &\\
+  \hline
+  COSADD & 66.7 & 61.5 & 63.8\\
+  COSMUL & 62.5 & 58.0 & 60.0 \\
+  \hline
+  \bf{50}& & &\\
+  \hline
+  COSADD & 49.5 & 44.6 & 46.8\\
+  COSMUL & 38.9 & 36.3 & 37.4 \\
+  \hline
+\end{tabular}
+\end{table}
+
+An interesting note is the difference in performance between {\bf gl}COSADD and
+COSADD implemented for this project. The 72.5 was achieved in seperate
+implementations in numpy and matlab (adapting their code).Thus while the
+scores reported in the paper differ, the performance of the algorithm
+implemented is the same. In terms of COSMUL, it performed slightly better at the
+300D level for syntactic and total performance.
+
+Examining the impact of dimension on performance, there is clear correlation
+between dimensionality and performance, though with diminishing returns. This is most likely due to the lower
+dimensions only representing some similarity aspects, while the larger dimensions
+can capture more. For example, consider the case of \textit{king}: \textit{king}
+relates more to royalty than it does to man. Thus a lower dimensional
+representation will obscure some of these relations, resulting in lower accuracy.
+
+In terms of individual performance, COSADD consistently performed better in
+nationality-adjective, family, city-state  relations for all dimensions while COSMULT performed
+better in currency relations for all but 50D embeddings. COSMULT performed
+comparitively the best in gram9-plural-verbs in the 300D case.
+
+\section{Programming Question}
+
+\begin{table}[h]
+\centering
+\caption{Distance Metric on MSR Dataset}
+\label{msr}
+\begin{tabular}{|l||c|}
+  \hline
+  Method & Total \\
+  \hline
+  \bf{300} & \\
+  \hline
+  COSADD  & 66.8 \\
+  COSMUL  & 68.4 \\
+  \hline
+  \bf{200} & \\
+  \hline
+  COSADD & 64.4 \\
+  COSMUL & 64.2 \\
+  \hline
+  \bf{100} & \\
+  \hline
+  COSADD & 60.3 \\
+  COSMUL & 57.5 \\
+  \hline
+  \bf{50}& \\
+  \hline
+  COSADD & 38.6 \\
+  COSMUL & 29.2 \\
+  \hline
+\end{tabular}
+\end{table}
+
+Looking at the overall trend in Table~\ref{msr}, once again there is a
+diminishing positive correlation between embedding size and the metrics'
+performances. COSADD outperforms COSMULT in all but the 300D embedding case.
+
+Examing individual performance, COSADD outperformed COSMULT almost all syntactic
+similarities in the 50D case. In 100D, while COSADD did perform better,
+COSMULT's improved in the verb group, often beating COSADD by a small margin.
+
+An interesting note in the 200D
+case is that COSMULT consistently outperformed COSADD when VBD tense was used in
+an analogy. In the 300D test, COSMULT was weakest in noun analogies and made the
+largest improvement in verb analogies.
+
+In terms of overall performance across embedding sizes, COSADD performed better
+with noun anaologies compared to COSMULT.
+
+\section{Code Instruction}
+To run the code, first either download vector files and Google/MSR datasets to the path listed in the
+code, or change the path. Then run 
+
+\begin{enumerate}
+\item pkl\_dicts.py
+\item dot\_temp.py for COSADD and COSMULT scores
+\item theory2.py to examine analogies tested for question
+\end{enumerate}
+
+
+\end{document}
